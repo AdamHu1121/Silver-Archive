@@ -17,6 +17,7 @@
 <!-- ===================================================================== -->
 <script>
 const ARCHIVE = {
+  bw: {
   photographer: "Chengshuo Adam Hu",
   title: "Silver Archive",
   subtitle: "银盐档案",
@@ -53,6 +54,25 @@ const ARCHIVE = {
       ]
     },
   ]
+  },
+  color: {
+    photographer: "Chengshuo Adam Hu",
+    title: "Chroma",
+    subtitle: "彩色档案",
+    statement: "colour · C-41 / E-6 · scanned on Epson V850",
+    rolls: [
+      {
+        id: "c-001", title: "first colour roll", date: "2026 · 06",
+        camera: "Canon AE-1 Program", film: "Kodak Portra 400", box: 400, ei: 400, push: "",
+        process: "C-41", lab: "", scan: "Epson V850 Pro", contactSheet: "",
+        frames: [
+          { frame: "1", img:"", lens:"New FD 35-70mm f/4", aperture:"f/4",  shutter:"1/250", note:"" },
+          { frame: "2", img:"", lens:"New FD 35-70mm f/4", aperture:"f/5.6", shutter:"1/125", note:"" }
+        ]
+      }
+    ]
+  },
+  options: {}
 };
 </script>
 
@@ -95,6 +115,8 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .switch:hover{color:var(--paper);border-color:var(--paper-dim)}
 .switch .disc{width:11px;height:11px;border-radius:50%;border:1px solid currentColor;
   background:linear-gradient(90deg,currentColor 50%,transparent 50%)}
+.snd{right:132px}
+.snd.on .disc{background:currentColor}
 
 .mast{margin-bottom:clamp(40px,8vw,84px)}
 .mast .name{font-family:var(--mono);font-weight:500;font-size:12px;letter-spacing:.34em;text-transform:uppercase;color:var(--gray);margin:0 0 18px}
@@ -249,6 +271,14 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .dk-field{display:flex;flex-direction:column;gap:5px}
 .dk-field label{font-family:var(--mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--gray-dim)}
 .dk-field input{font-family:var(--mono);font-size:13px;color:var(--paper);background:var(--field);border:1px solid var(--line);padding:9px 10px;transition:.2s var(--ease)}
+.dk-field select,.dk-frame select{font-family:var(--mono);color:var(--paper);background:var(--field);border:1px solid var(--line);
+  width:100%;cursor:pointer;appearance:none;-webkit-appearance:none;
+  background-image:linear-gradient(45deg,transparent 50%,var(--gray) 50%),linear-gradient(135deg,var(--gray) 50%,transparent 50%);
+  background-position:calc(100% - 14px) calc(50% - 1px),calc(100% - 9px) calc(50% - 1px);background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+.dk-field select{font-size:13px;padding:9px 26px 9px 10px}
+.dk-frame select{font-size:12px;padding:8px 24px 8px 9px}
+.dk-field select:focus,.dk-frame select:focus{outline:none;border-color:var(--paper-dim)}
+.dk-field select option,.dk-frame select option{background:var(--counter);color:var(--paper)}
 .dk-field input:focus{outline:none;border-color:var(--paper-dim)}
 .dk-roll-tools{display:flex;gap:10px;margin:18px 0 28px;flex-wrap:wrap}
 .dk-mini{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--gray);border:1px solid var(--line);padding:8px 13px;transition:.2s var(--ease)}
@@ -293,17 +323,52 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 @keyframes lamp-warm{0%{opacity:.14}40%{opacity:.52}100%{opacity:.3}}
 @keyframes mote-float{0%{transform:translate(0,0)}100%{transform:translate(16px,-30px)}}
 
+:root{--accent:#b9b8b2}
+[data-medium="color"]{--accent:#e8852e}
+[data-medium="color"] .cell img,[data-medium="color"] .cell .ph,
+[data-medium="color"] .plate figure img,[data-medium="color"] .plate figure .ph,
+[data-medium="color"] .tray-cell img,[data-medium="color"] .scan-stage img{filter:contrast(1.02)!important}
+[data-medium="color"] .strip-cell .neg{filter:invert(1)!important}
+[data-medium="color"] .plate.is-neg figure img,[data-medium="color"] .plate.is-neg figure .ph{filter:invert(1)!important}
+[data-medium="color"] .rebate{color:var(--accent)}
+[data-medium="color"] .tray-cell.on{box-shadow:0 0 0 1px var(--accent),0 0 24px rgba(232,133,46,.25)}
+
+#landing.view.active{width:100vw;margin-left:calc(50% - 50vw);min-height:100vh;margin-top:calc(-1 * clamp(28px,6vw,72px));display:flex;flex-direction:column}
+.doors{flex:1;display:grid;grid-template-columns:1fr 1fr}
+.door{position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:clamp(24px,4vw,54px);min-height:100vh;border:none;background:var(--surface-2)}
+.door-media{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.62;transition:transform 1.3s var(--ease),opacity .6s var(--ease)}
+.door.bw .door-media{filter:grayscale(1) contrast(1.05) brightness(.78);background-color:#15161a}
+.door.color .door-media{filter:saturate(1.06) contrast(1.02) brightness(.82);background-color:#1a1410}
+.door::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.62),transparent 58%)}
+.door.color::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:#e8852e;z-index:3}
+.door:hover .door-media{transform:scale(1.05);opacity:.82}
+.door-cap{position:relative;z-index:2;display:flex;flex-direction:column;gap:7px;color:#f3f1ec;text-align:left}
+.door-k{font-family:var(--mono);font-size:11px;letter-spacing:.28em;text-transform:uppercase;opacity:.8}
+.door-t{font-family:var(--serif);font-weight:340;font-size:clamp(40px,7vw,78px);line-height:.9}
+.door-n{font-family:var(--mono);font-size:11px;letter-spacing:.12em;opacity:.7}
+.doors-foot{position:absolute;top:0;left:0;right:0;padding:clamp(20px,4vw,40px);text-align:center;font-family:var(--mono);font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:#cfcdc7;z-index:4;pointer-events:none}
+
+.mast-nav{display:flex;gap:18px;margin:0 0 24px;font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase}
+.mast-nav button{color:var(--gray)}
+.mast-nav button:hover{color:var(--paper)}
+.dk-side{display:flex;border:1px solid var(--line)}
+.dk-side button{padding:7px 14px;font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--gray)}
+.dk-side button.on{background:var(--paper);color:var(--counter)}
+
 @media(max-width:760px){
   .contact-grid{grid-template-columns:repeat(3,1fr)}
   .frame-wrap{grid-template-columns:1fr;gap:34px}
   .roll-head{flex-direction:column;gap:6px}
   .roll-meta{text-align:left}
   .switch{top:auto;bottom:16px;right:16px}
+  .snd{top:auto;bottom:58px;right:16px}
   .dk-body{grid-template-columns:1fr}
   .dk-rolls{border-right:none;border-bottom:1px solid var(--line);max-height:30vh}
   .dk-frame{grid-template-columns:64px 1fr 1fr auto}
   .dk-frame .dk-thumb{width:64px}
   .dk-frame .dk-note-field{grid-column:1 / -1}
+  .doors{grid-template-columns:1fr}
+  .door{min-height:50vh}
 }
 @media(max-width:430px){.contact-grid{grid-template-columns:repeat(2,1fr)}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.001ms!important}}
@@ -313,15 +378,30 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 <body>
 <div class="enlarger" aria-hidden="true"></div>
 <button class="switch" id="switch" aria-label="切换白天/夜间"><span class="disc"></span><span id="switch-label">night</span></button>
+<button class="switch snd" id="sound" aria-label="开关音效"><span class="disc"></span><span id="sound-label">sound off</span></button>
 
 <div class="wrap">
+  <main id="landing" class="view active">
+    <div class="doors">
+      <button class="door bw" data-enter="bw">
+        <div class="door-media" id="door-bw"></div>
+        <div class="door-cap"><span class="door-k">01 / 黑白</span><span class="door-t">Silver</span><span class="door-n" id="door-bw-n"></span></div>
+      </button>
+      <button class="door color" data-enter="color">
+        <div class="door-media" id="door-color"></div>
+        <div class="door-cap"><span class="door-k">02 / 彩色</span><span class="door-t">Chroma</span><span class="door-n" id="door-color-n"></span></div>
+      </button>
+    </div>
+  </main>
+
   <header class="mast" id="mast">
+    <nav class="mast-nav"><button data-to="landing">◀ doors</button><button id="flipSide"></button></nav>
     <p class="name" id="m-name"></p>
     <h1 id="m-title"></h1>
     <p class="statement" id="m-statement"></p>
   </header>
 
-  <main id="index" class="view active"><section class="rolls" id="rolls"></section></main>
+  <main id="index" class="view"><section class="rolls" id="rolls"></section></main>
 
   <main id="contact" class="view">
     <nav class="crumb"><button class="back" data-to="index">← archive</button><span class="here" id="c-here"></span><span class="count" id="c-count"></span></nav>
@@ -370,6 +450,7 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 <div class="dk-panel" id="dkPanel" aria-hidden="true">
   <header class="dk-head">
     <span class="dk-title">Darkroom</span>
+    <div class="dk-side" id="dkSide"><button data-es="bw" class="on">黑白</button><button data-es="color">彩色</button></div>
     <span class="dk-status" id="dkStatus"></span>
     <button class="dk-close" id="dkClose">close ✕</button>
   </header>
@@ -386,18 +467,64 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 <input type="file" id="dkFile" accept="image/*" multiple hidden>
 
 <script>
-let A = (typeof ARCHIVE!=='undefined') ? ARCHIVE : {photographer:'',title:'Silver Archive',subtitle:'',statement:'',rolls:[]};
+let DOC = (typeof ARCHIVE!=='undefined') ? ARCHIVE : {bw:{rolls:[]},color:{rolls:[]},options:{}};
+let side='bw', A=DOC.bw;
+function setSide(s){ if(!DOC[s]) return; side=s; A=DOC[s]; document.documentElement.setAttribute('data-medium',s); }
+
+function migrate(j){
+  if(!j||typeof j!=='object') return DOC;
+  if(j.bw && j.color) return j;
+  if(Array.isArray(j.rolls)){
+    return {
+      bw:{photographer:j.photographer,title:j.title||'Silver Archive',subtitle:j.subtitle||'银盐档案',statement:j.statement||'',rolls:j.rolls},
+      color:{photographer:j.photographer,title:'Chroma',subtitle:'彩色档案',statement:'colour · C-41 / E-6 · scanned on Epson V850',rolls:[]},
+      options:j.options||{}
+    };
+  }
+  return DOC;
+}
 
 (async function load(){
   try{
     const r = await fetch('archive.json', {cache:'no-store'});
-    if(r.ok){ const j = await r.json(); if(j && Array.isArray(j.rolls)) A = j; }
+    if(r.ok){ const j = await r.json(); DOC = migrate(j); }
   }catch(e){ /* no archive.json — use inline seed */ }
+  A = DOC[side] || DOC.bw;
   boot();
 })();
 
 function boot(){
   const $ = s => document.querySelector(s);
+
+  /* ---- synthesized darkroom sound effects (no audio files) ---- */
+  const SFX = (function(){
+    let ctx=null, master=null, on=false;
+    function ensure(){
+      if(!ctx){ try{ const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return; ctx=new AC(); master=ctx.createGain(); master.gain.value=0.16; master.connect(ctx.destination); }catch(e){ return; } }
+      if(ctx && ctx.state==='suspended') ctx.resume();
+    }
+    function tone(freq, dur, type, gain, glideTo){
+      if(!on||!ctx) return; const o=ctx.createOscillator(), g=ctx.createGain(), t=ctx.currentTime;
+      o.type=type||'sine'; o.frequency.setValueAtTime(freq,t); if(glideTo) o.frequency.exponentialRampToValueAtTime(glideTo,t+dur);
+      g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(gain,t+0.004); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+      o.connect(g); g.connect(master); o.start(t); o.stop(t+dur+0.02);
+    }
+    function noise(dur, gain, type, freq, q){
+      if(!on||!ctx) return; const n=ctx.createBufferSource(), len=Math.max(1,Math.floor(ctx.sampleRate*dur));
+      const buf=ctx.createBuffer(1,len,ctx.sampleRate), d=buf.getChannelData(0);
+      for(let i=0;i<len;i++) d[i]=(Math.random()*2-1)*(1-i/len);
+      n.buffer=buf; const f=ctx.createBiquadFilter(); f.type=type||'bandpass'; f.frequency.value=freq||1200; f.Q.value=q||0.8;
+      const g=ctx.createGain(), t=ctx.currentTime; g.gain.setValueAtTime(gain,t); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+      n.connect(f); f.connect(g); g.connect(master); n.start(t); n.stop(t+dur);
+    }
+    return {
+      ensure, setOn(v){on=v;}, isOn(){return on;},
+      advance(){ ensure(); noise(0.05,0.28,'bandpass',820,0.9); tone(150,0.10,'sine',0.22,70); setTimeout(()=>noise(0.03,0.16,'highpass',2400,0.6),52); },
+      shutter(){ ensure(); noise(0.016,0.32,'highpass',2700,0.5); setTimeout(()=>noise(0.02,0.24,'highpass',1700,0.5),36); },
+      tick(){ ensure(); noise(0.018,0.16,'bandpass',1500,1.3); tone(330,0.03,'triangle',0.05); },
+      close(){ ensure(); tone(180,0.13,'sine',0.16,86); }
+    };
+  })();
 
   function placeholder(seed){
     const h = Array.from(seed).reduce((a,c)=>(a*31+c.charCodeAt(0))>>>0, 7);
@@ -415,29 +542,40 @@ function boot(){
   }
 
   const scanCache = {};
-  function buildScan(roll, ri){
+  function loadImg(src){ return new Promise(res=>{ if(!src||!src.trim()) return res(null); const im=new Image(); im.onload=()=>res(im); im.onerror=()=>res(null); im.src=src; }); }
+  async function buildScan(roll, ri){
     if(roll.contactSheet && roll.contactSheet.trim()) return roll.contactSheet.trim();
     if(scanCache[ri]) return scanCache[ri];
     try{
+      const isColor = side==='color';
       const cols=6, n=roll.frames.length, rows=Math.max(1,Math.ceil(n/cols));
-      const cw=180, ch=120, gut=10, side=22, top=82, lab=22;
-      const W=side*2+cols*cw+(cols-1)*gut, H=top+rows*(ch+lab)+side;
+      const cw=180, ch=120, gut=10, mg=22, top=82, lab=22;
+      const W=mg*2+cols*cw+(cols-1)*gut, H=top+rows*(ch+lab)+mg;
       const cv=document.createElement('canvas'); cv.width=W; cv.height=H;
-      const x=cv.getContext('2d'); x.fillStyle='#0c0c0d'; x.fillRect(0,0,W,H);
-      x.fillStyle='#d98b3a'; x.font="600 18px 'IBM Plex Mono',monospace";
-      x.fillText((roll.id||'').toUpperCase()+"   "+(roll.film||''), side, 40);
-      x.font="13px 'IBM Plex Mono',monospace"; x.fillStyle='#caa56a';
-      x.fillText("✓ "+(roll.developer||'')+"  "+(roll.dilution||'')+"   "+(roll.devTime||'')+"  "+(roll.temp||''), side, 62);
+      const x=cv.getContext('2d'); x.fillStyle=isColor?'#161210':'#0c0c0d'; x.fillRect(0,0,W,H);
+      x.fillStyle='#e8852e'; x.font="600 18px 'IBM Plex Mono',monospace";
+      x.fillText((roll.id||'').toUpperCase()+"   "+(roll.film||''), mg, 40);
+      x.font="13px 'IBM Plex Mono',monospace"; x.fillStyle=isColor?'#d9a06a':'#caa56a';
+      x.fillText(isColor ? ("✓ "+(roll.process||'')+"   "+(roll.lab||'')) : ("✓ "+(roll.developer||'')+"  "+(roll.dilution||'')+"   "+(roll.devTime||'')+"  "+(roll.temp||'')), mg, 62);
+      const imgs = await Promise.all(roll.frames.map(f=>loadImg(f.img)));
       roll.frames.forEach((f,i)=>{
-        const cx=side+(i%cols)*(cw+gut), cy=top+Math.floor(i/cols)*(ch+lab);
-        const tone=30+((Array.from(f.frame||'?').reduce((a,c)=>a+c.charCodeAt(0),0))%40);
-        x.fillStyle="rgb("+tone+","+tone+","+tone+")"; x.fillRect(cx,cy,cw,ch);
-        for(let k=0;k<320;k++){const a=Math.random()*0.5;const v=Math.floor(tone-30+Math.random()*70);
-          x.fillStyle="rgba("+v+","+v+","+v+","+a+")"; x.fillRect(cx+Math.random()*cw, cy+Math.random()*ch, 1.4, 1.4);}
-        x.strokeStyle='rgba(255,255,255,.06)'; x.strokeRect(cx+.5,cy+.5,cw-1,ch-1);
+        const cx=mg+(i%cols)*(cw+gut), cy=top+Math.floor(i/cols)*(ch+lab);
+        const im=imgs[i];
+        if(im){
+          x.save(); x.beginPath(); x.rect(cx,cy,cw,ch); x.clip(); x.filter=isColor?'contrast(1.02)':'grayscale(1) contrast(1.04)';
+          const ir=im.width/im.height, tr=cw/ch; let sw,sh,sx,sy;
+          if(ir>tr){ sh=im.height; sw=sh*tr; sx=(im.width-sw)/2; sy=0; } else { sw=im.width; sh=sw/tr; sx=0; sy=(im.height-sh)/2; }
+          x.drawImage(im, sx,sy,sw,sh, cx,cy,cw,ch); x.restore(); x.filter='none';
+        } else {
+          const tone=30+((Array.from(f.frame||'?').reduce((a,c)=>a+c.charCodeAt(0),0))%40);
+          x.fillStyle="rgb("+tone+","+tone+","+tone+")"; x.fillRect(cx,cy,cw,ch);
+          for(let k=0;k<240;k++){const a=Math.random()*0.45;const v=Math.floor(tone-28+Math.random()*64);
+            x.fillStyle="rgba("+v+","+v+","+v+","+a+")"; x.fillRect(cx+Math.random()*cw, cy+Math.random()*ch, 1.4, 1.4);}
+        }
+        x.strokeStyle='rgba(255,255,255,.08)'; x.strokeRect(cx+.5,cy+.5,cw-1,ch-1);
         x.fillStyle='#e8e6e0'; x.font="11px 'IBM Plex Mono',monospace"; x.fillText(f.frame||'', cx+2, cy+ch+15);
       });
-      const url=cv.toDataURL('image/jpeg',0.82); scanCache[ri]=url; return url;
+      const url=cv.toDataURL('image/jpeg',0.85); scanCache[ri]=url; return url;
     }catch(e){ return placeholder('sheet-'+ri); }
   }
 
@@ -446,6 +584,7 @@ function boot(){
     $('#m-name').textContent = A.photographer||'';
     $('#m-title').innerHTML = (A.title||'')+"<span class='cn'>"+(A.subtitle||'')+"</span>";
     $('#m-statement').textContent = A.statement || '';
+    const fs=$('#flipSide'); if(fs) fs.textContent = side==='bw' ? 'colour →' : '← b&w';
     document.title = (A.title||'Silver Archive') + " · " + (A.subtitle||'');
   }
   const rollsEl = $('#rolls');
@@ -470,17 +609,20 @@ function boot(){
   }
   rollsEl.addEventListener('click', e => {
     const open = e.target.closest('[data-open]');
-    if(open){ showContact(+open.dataset.open); return; }
+    if(open){ SFX.tick(); showContact(+open.dataset.open); return; }
     const cell = e.target.closest('.strip-cell');
     if(cell){ showContact(+cell.dataset.roll); openFrame(cell.dataset.frame); }
   });
 
-  const views = { index:$('#index'), contact:$('#contact'), frame:$('#frame') };
+  const views = { landing:$('#landing'), index:$('#index'), contact:$('#contact'), frame:$('#frame') };
   let curRoll = 0, curFrameIdx = 0, isNeg = false;
   function setView(name){
     Object.values(views).forEach(v=>v.classList.remove('active'));
     views[name].classList.add('active');
     $('#mast').style.display = name==='index' ? '' : 'none';
+    const onLanding = name==='landing';
+    $('#switch').style.display = onLanding ? 'none' : '';
+    $('#sound').style.display = onLanding ? 'none' : '';
     window.scrollTo({top:0,behavior:'instant'});
   }
   function showContact(ri){
@@ -488,9 +630,11 @@ function boot(){
     $('#c-here').textContent = roll.id||''; $('#c-count').textContent = roll.frames.length + ' frames';
     $('#c-title').textContent = roll.title || roll.id || '';
     const ei = roll.ei && roll.ei!==roll.box ? roll.ei+(roll.push?' ('+roll.push+')':'') : ''+(roll.box||'');
-    const specs = [['camera',roll.camera],['film',roll.film],['exposure index',ei],
-      ['developer',[roll.developer,roll.dilution].filter(Boolean).join(' ')],
-      ['time / temp',[roll.devTime,roll.temp].filter(Boolean).join(' · ')],['scan',roll.scan],['date',roll.date]].filter(s=>s[1]);
+    const specs = side==='color'
+      ? [['camera',roll.camera],['film',roll.film],['exposure index',ei],['process',roll.process],['lab',roll.lab],['scan',roll.scan],['date',roll.date]].filter(s=>s[1])
+      : [['camera',roll.camera],['film',roll.film],['exposure index',ei],
+         ['developer',[roll.developer,roll.dilution].filter(Boolean).join(' ')],
+         ['time / temp',[roll.devTime,roll.temp].filter(Boolean).join(' · ')],['scan',roll.scan],['date',roll.date]].filter(s=>s[1]);
     $('#c-specs').innerHTML = specs.map(s=>"<div class='spec'><div class='k'>"+s[0]+"</div><div class='v'>"+s[1]+"</div></div>").join('');
     $('#c-grid').innerHTML = roll.frames.map((f,i)=>
       "<button class='cell' data-frame='"+f.frame+"' style='animation-delay:"+(i*0.045)+"s' aria-label='frame "+f.frame+"'>"+
@@ -503,7 +647,7 @@ function boot(){
   function openFrame(frameId){
     const roll = A.rolls[curRoll]; if(!roll) return;
     curFrameIdx = roll.frames.findIndex(f=>f.frame===frameId); if(curFrameIdx<0) curFrameIdx=0;
-    setEnter(0); renderTray(); renderFrame(); warmLamp(); setView('frame');
+    setEnter(0); renderTray(); renderFrame(); warmLamp(); SFX.shutter(); setView('frame');
   }
   function renderFrame(){
     const roll = A.rolls[curRoll]; const f = roll.frames[curFrameIdx]; if(!f) return;
@@ -514,9 +658,12 @@ function boot(){
     $('#f-of').textContent = String(curFrameIdx+1).padStart(2,'0')+' / '+String(roll.frames.length).padStart(2,'0');
     $('#f-rebate-l').textContent = roll.film||''; $('#f-rebate-r').textContent = 'FRAME '+f.frame;
     const ei = roll.ei && roll.ei!==roll.box ? roll.ei+(roll.push?' ('+roll.push+')':'') : ''+(roll.box||'');
-    const rows = [['lens',f.lens],['aperture',f.aperture],['shutter',f.shutter],['camera',roll.camera],['film',roll.film],
-      ['exposure index',ei],['developer',[roll.developer,roll.dilution].filter(Boolean).join(' ')],
-      ['process',[roll.devTime,roll.temp].filter(Boolean).join(' · ')],['scan',roll.scan]].filter(r=>r[1]);
+    const rows = side==='color'
+      ? [['lens',f.lens],['aperture',f.aperture],['shutter',f.shutter],['camera',roll.camera],['film',roll.film],
+         ['exposure index',ei],['process',roll.process],['lab',roll.lab],['scan',roll.scan]].filter(r=>r[1])
+      : [['lens',f.lens],['aperture',f.aperture],['shutter',f.shutter],['camera',roll.camera],['film',roll.film],
+         ['exposure index',ei],['developer',[roll.developer,roll.dilution].filter(Boolean).join(' ')],
+         ['process',[roll.devTime,roll.temp].filter(Boolean).join(' · ')],['scan',roll.scan]].filter(r=>r[1]);
     $('#f-table').innerHTML = rows.map((r,i)=>"<div class='row' style='animation-delay:"+(0.05+i*0.04)+"s'><span class='k'>"+r[0]+"</span><span class='v'>"+r[1]+"</span></div>").join('');
     const note=$('#f-note'); if(f.note&&f.note.trim()){note.style.display='';note.textContent=f.note;} else note.style.display='none';
     $('#f-prev').disabled = curFrameIdx===0; $('#f-next').disabled = curFrameIdx===roll.frames.length-1;
@@ -531,7 +678,7 @@ function boot(){
     const roll=A.rolls[curRoll]; if(!roll||idx<0||idx>=roll.frames.length||idx===curFrameIdx) return;
     const dir = idx>curFrameIdx ? 1 : -1;
     curFrameIdx = idx;
-    setEnter(dir*26); flashGate(); warmLamp(); renderFrame();
+    setEnter(dir*26); flashGate(); warmLamp(); SFX.advance(); renderFrame();
   }
   /* slide tray (filmstrip) */
   function renderTray(){
@@ -558,21 +705,44 @@ function boot(){
     }
     beam.innerHTML=h;
   })();
-  $('#f-toggle').addEventListener('click', ()=>{isNeg=!isNeg;$('.plate').classList.toggle('is-neg',isNeg);$('#f-toggle').classList.toggle('on',isNeg);$('#f-toggle-label').textContent=isNeg?'view as positive':'view as negative';});
+  $('#f-toggle').addEventListener('click', ()=>{SFX.tick();isNeg=!isNeg;$('.plate').classList.toggle('is-neg',isNeg);$('#f-toggle').classList.toggle('on',isNeg);$('#f-toggle-label').textContent=isNeg?'view as positive':'view as negative';});
   $('#f-prev').addEventListener('click', ()=>goFrame(curFrameIdx-1));
   $('#f-next').addEventListener('click', ()=>goFrame(curFrameIdx+1));
-  $('#f-back').addEventListener('click', ()=>showContact(curRoll));
-  document.querySelectorAll('[data-to="index"]').forEach(b=>b.addEventListener('click',()=>setView('index')));
+  $('#f-back').addEventListener('click', ()=>{SFX.tick();showContact(curRoll);});
+  function enterSide(s){ setSide(s); renderMast(); renderIndex(); setView('index'); try{location.hash=s;}catch(e){} }
+  function latestImg(set){
+    const rs=(set&&set.rolls)||[];
+    for(let i=rs.length-1;i>=0;i--){ const fr=(rs[i].frames||[]).find(f=>f.img&&f.img.trim()); if(fr) return fr.img; }
+    return null;
+  }
+  function rollCount(set){ const n=(((set&&set.rolls)||[]).length); return n+(n===1?' roll':' rolls'); }
+  function renderLanding(){
+    const bwI=latestImg(DOC.bw), coI=latestImg(DOC.color);
+    const d1=$('#door-bw'), d2=$('#door-color');
+    if(d1) d1.style.backgroundImage = bwI?("url("+bwI+")"):'';
+    if(d2) d2.style.backgroundImage = coI?("url("+coI+")"):'';
+    $('#door-bw-n').textContent = rollCount(DOC.bw);
+    $('#door-color-n').textContent = rollCount(DOC.color);
+  }
+  $('#landing').addEventListener('click', e=>{ const d=e.target.closest('[data-enter]'); if(d){ SFX.shutter(); enterSide(d.dataset.enter); } });
+  $('#flipSide').addEventListener('click', ()=>{ SFX.tick(); enterSide(side==='bw'?'color':'bw'); });
+  document.querySelectorAll('[data-to]').forEach(b=>b.addEventListener('click',()=>{
+    SFX.tick(); const t=b.dataset.to;
+    if(t==='landing'){ try{location.hash='';}catch(e){} renderLanding(); setView('landing'); }
+    else setView(t);
+  }));
 
   /* ---- scan loupe ---- */
   const overlay=$('#scanOverlay'), stage=$('#scanStage'), scanImg=$('#scanImg'), loupe=$('#loupe'), cap=$('#scanCap');
   const ZOOM=2.4, LR=100;
-  function openScan(ri){
-    const roll=A.rolls[ri]; if(!roll) return;
-    cap.textContent=(roll.contactSheet&&roll.contactSheet.trim()?'original scan':'composite contact sheet')+' · '+(roll.id||'');
-    scanImg.src=buildScan(roll,ri); overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false');
+  async function openScan(ri){
+    const roll=A.rolls[ri]; if(!roll) return; SFX.shutter();
+    overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false');
+    scanImg.removeAttribute('src'); cap.textContent='developing…';
+    const url=await buildScan(roll,ri); scanImg.src=url;
+    cap.textContent=(roll.contactSheet&&roll.contactSheet.trim()?'original scan':'contact sheet')+' · '+(roll.id||'');
   }
-  function closeScan(){overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');stage.classList.remove('loupe-on');}
+  function closeScan(){SFX.close();overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');stage.classList.remove('loupe-on');}
   $('#scanClose').addEventListener('click', closeScan);
   overlay.addEventListener('click', e=>{ if(e.target===overlay) closeScan(); });
   if(window.matchMedia('(hover:hover) and (pointer:fine)').matches){
@@ -592,7 +762,13 @@ function boot(){
   const root=document.documentElement, swLabel=$('#switch-label');
   function setTheme(t){ root.setAttribute('data-theme',t); swLabel.textContent=t==='day'?'day':'night'; }
   setTheme(window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'day':'night');
-  $('#switch').addEventListener('click', ()=> setTheme(root.getAttribute('data-theme')==='day'?'night':'day'));
+  $('#switch').addEventListener('click', ()=> { SFX.tick(); setTheme(root.getAttribute('data-theme')==='day'?'night':'day'); });
+  const sndBtn=$('#sound');
+  sndBtn.addEventListener('click', ()=>{
+    const turnOn=!SFX.isOn(); SFX.setOn(turnOn); sndBtn.classList.toggle('on',turnOn);
+    $('#sound-label').textContent = turnOn?'sound on':'sound off';
+    if(turnOn){ SFX.ensure(); SFX.tick(); }
+  });
 
   document.addEventListener('keydown', e=>{
     if($('#dkPanel').classList.contains('open')) return;
@@ -612,9 +788,9 @@ function boot(){
   showEditEntry(); window.addEventListener('hashchange', showEditEntry);
 
   function setDirty(v){ dirty=v; dkStatus.textContent = v?'未导出的改动':'已是最新'; dkStatus.classList.toggle('dirty',v); }
-  function sizeStr(){ const b=new Blob([JSON.stringify(A)]).size; return (b/1048576).toFixed(2)+' MB'; }
+  function sizeStr(){ const b=new Blob([JSON.stringify(DOC)]).size; return (b/1048576).toFixed(2)+' MB'; }
   function refreshSize(){ dkSize.textContent='archive.json ≈ '+sizeStr(); }
-  function liveRefresh(){ renderMast(); renderIndex(); refreshSize(); }
+  function liveRefresh(){ for(const k in scanCache) delete scanCache[k]; renderMast(); renderIndex(); refreshSize(); }
 
   function nextFrameNo(roll){
     let mx=0; roll.frames.forEach(f=>{ const m=String(f.frame).match(/\d+/); if(m) mx=Math.max(mx,+m[0]); });
@@ -643,6 +819,46 @@ function boot(){
     setDirty(true); renderEdit(); liveRefresh();
   }
 
+  function ensureOptions(){
+    const defaults={
+      camera:["Canon AE-1 Program"], lens:["New FD 35-70mm f/4"],
+      film:["Ilford HP5 Plus","Kodak Tri-X 400","Ilford FP4 Plus","Kodak T-Max 400","Ilford Delta 3200"],
+      colorFilm:["Kodak Portra 400","Kodak Portra 160","Kodak Gold 200","Kodak Ektar 100","Kodak ColorPlus 200","Fujifilm C200","CineStill 800T"],
+      developer:["Ilford ID-11","Kodak D-76","Rodinal","Ilford DD-X","Kodak HC-110"],
+      dilution:["stock","1+1","1+3","1+25","1+50"],
+      process:["C-41","E-6"], lab:[],
+      box:["50","100","125","200","400","800","1600","3200"],
+      ei:["50","100","125","200","400","800","1600","3200"],
+      push:["+1","+2","+3","-1","-2"],
+      temp:["20°C","21°C","24°C"], scan:["Epson V850 Pro"],
+      aperture:["f/1.4","f/2","f/2.8","f/4","f/5.6","f/8","f/11","f/16","f/22"],
+      shutter:["1/1000","1/500","1/250","1/125","1/60","1/30","1/15","1/8","1/4","1/2","1s","B"],
+      devTime:["6:30","7:30","9:00","11:00","13:00"]
+    };
+    if(!DOC.options || typeof DOC.options!=='object') DOC.options={};
+    for(const k in defaults){ if(!Array.isArray(DOC.options[k])) DOC.options[k]=defaults[k].slice(); }
+    const add=(k,v)=>{ if(v==null||v==='') return; v=String(v); if(DOC.options[k] && DOC.options[k].indexOf(v)<0) DOC.options[k].push(v); };
+    const gear=r=>{ add('camera',r.camera); add('box',r.box); add('ei',r.ei); add('push',r.push); add('scan',r.scan);
+      (r.frames||[]).forEach(f=>{ add('lens',f.lens); add('aperture',f.aperture); add('shutter',f.shutter); }); };
+    ((DOC.bw&&DOC.bw.rolls)||[]).forEach(r=>{ gear(r); add('film',r.film); add('developer',r.developer); add('dilution',r.dilution); add('temp',r.temp); add('devTime',r.devTime); });
+    ((DOC.color&&DOC.color.rolls)||[]).forEach(r=>{ gear(r); add('colorFilm',r.film); add('process',r.process); add('lab',r.lab); });
+  }
+  ensureOptions();
+  function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+  function optionList(optKey, cur){
+    let opts=(DOC.options[optKey]||[]).filter(o=>o!=='' && o!=null);
+    cur = cur==null?'':String(cur);
+    if(cur && opts.indexOf(cur)<0) opts=[cur].concat(opts);
+    return "<option value=''"+(cur===''?' selected':'')+"></option>"+
+      opts.map(o=>"<option value=\""+esc(o)+"\""+(o===cur?' selected':'')+">"+esc(o)+"</option>").join('')+
+      "<option value='__add__'>+ 添加新选项…</option>";
+  }
+  function selField(label, rk, val, optKey){
+    return "<div class='dk-field'><label>"+label+"</label><select data-rk='"+rk+"' data-opt='"+optKey+"' data-label=\""+esc(label)+"\">"+optionList(optKey,val)+"</select></div>";
+  }
+  function fsel(fk, val, optKey){
+    return "<select data-fk='"+fk+"' data-opt='"+optKey+"' data-label='"+fk+"'>"+optionList(optKey,val)+"</select>";
+  }
   function field(label,key,val,attr){ return "<div class='dk-field'><label>"+label+"</label><input data-rk='"+key+"' value=\""+(val==null?'':String(val).replace(/"/g,'&quot;'))+"\" "+(attr||'')+"></div>"; }
 
   function renderRolls(){
@@ -656,22 +872,26 @@ function boot(){
   function renderEdit(){
     const roll=A.rolls[sel];
     if(!roll){ dkEdit.innerHTML="<p class='dk-empty'>左边选一卷，或「新建一卷」开始。</p>"; return; }
-    const meta="<p class='dk-section-l'>roll · 这一卷的冲洗与器材</p><div class='dk-rollmeta'>"+
-      field('id','id',roll.id)+field('title 名字','title',roll.title)+field('date 日期','date',roll.date)+
-      field('camera 机身','camera',roll.camera)+field('film 胶卷','film',roll.film)+
-      field('box ISO','box',roll.box,"inputmode='numeric'")+field('EI 实拍','ei',roll.ei,"inputmode='numeric'")+field('push 推拉','push',roll.push)+
-      field('developer 显影液','developer',roll.developer)+field('dilution 稀释','dilution',roll.dilution)+
-      field('time 时间','devTime',roll.devTime)+field('temp 温度','temp',roll.temp)+field('scan 扫描','scan',roll.scan)+
+    const isColor = side==='color';
+    let mf = field('id','id',roll.id)+field('title 名字','title',roll.title)+field('date 日期','date',roll.date)+
+      selField('camera 机身','camera',roll.camera,'camera')+
+      selField('film 胶卷','film',roll.film, isColor?'colorFilm':'film')+
+      selField('box ISO','box',roll.box,'box')+selField('EI 实拍','ei',roll.ei,'ei')+selField('push 推拉','push',roll.push,'push');
+    if(isColor){ mf += selField('process 工艺','process',roll.process,'process')+selField('lab 冲洗店','lab',roll.lab,'lab'); }
+    else { mf += selField('developer 显影液','developer',roll.developer,'developer')+selField('dilution 稀释','dilution',roll.dilution,'dilution')+
+      selField('time 时间','devTime',roll.devTime,'devTime')+selField('temp 温度','temp',roll.temp,'temp'); }
+    mf += selField('scan 扫描','scan',roll.scan,'scan');
+    const meta="<p class='dk-section-l'>roll · "+(isColor?'彩色卷 · 工艺与器材':'这一卷的冲洗与器材')+"</p><div class='dk-rollmeta'>"+mf+
       "</div><div class='dk-roll-tools'><button class='dk-mini danger' id='dkDelRoll'>删除这一卷</button></div>";
     const frames="<p class='dk-section-l'>frames · 拖照片进来自动生成（已压到网页尺寸）</p>"+
       "<div class='dk-drop' id='dkDrop'>把照片拖到这里，或点击选择（可多选）</div>"+
       (roll.frames.length? roll.frames.map((f,i)=>
         "<div class='dk-frame' data-fi='"+i+"'>"+
           "<div class='dk-thumb'>"+media(f)+"</div>"+
-          "<input data-fk='frame' value=\""+(f.frame||'')+"\" placeholder='帧号'>"+
-          "<input data-fk='lens' value=\""+(f.lens||'')+"\" placeholder='镜头'>"+
-          "<input data-fk='aperture' value=\""+(f.aperture||'')+"\" placeholder='光圈'>"+
-          "<input data-fk='shutter' value=\""+(f.shutter||'')+"\" placeholder='快门'>"+
+          "<input data-fk='frame' value=\""+esc(f.frame)+"\" placeholder='帧号'>"+
+          fsel('lens',f.lens,'lens')+
+          fsel('aperture',f.aperture,'aperture')+
+          fsel('shutter',f.shutter,'shutter')+
           "<input class='dk-note-field' data-fk='note' value=\""+((f.note||'').replace(/"/g,'&quot;'))+"\" placeholder='一句感受（可空）'>"+
           "<div class='dk-frame-act'><button data-mv='-1' title='上移'>↑</button><button data-mv='1' title='下移'>↓</button><button class='x' data-del='1' title='删除'>✕</button></div>"+
         "</div>").join('') : "<p class='dk-empty'>这一卷还没有照片。</p>");
@@ -684,13 +904,15 @@ function boot(){
     const item=e.target.closest('[data-sel]');
     if(item){ sel=+item.dataset.sel; renderEditor(); return; }
     if(e.target.id==='dkNew'){
-      const n=A.rolls.length+1;
-      A.rolls.push({id:'roll-'+String(n).padStart(3,'0'),title:'',date:'',camera:'',film:'',box:400,ei:400,push:'',developer:'',dilution:'',devTime:'',temp:'',scan:'Epson V850 Pro',contactSheet:'',frames:[]});
+      const n=A.rolls.length+1, pad=String(n).padStart(3,'0');
+      if(side==='color') A.rolls.push({id:'c-'+pad,title:'',date:'',camera:'',film:'',box:400,ei:400,push:'',process:'C-41',lab:'',scan:'Epson V850 Pro',contactSheet:'',frames:[]});
+      else A.rolls.push({id:'roll-'+pad,title:'',date:'',camera:'',film:'',box:400,ei:400,push:'',developer:'',dilution:'',devTime:'',temp:'',scan:'Epson V850 Pro',contactSheet:'',frames:[]});
       sel=A.rolls.length-1; setDirty(true); renderEditor(); liveRefresh();
     }
   });
   // delegation: edit pane (inputs + frame actions + drop)
   dkEdit.addEventListener('input', e=>{
+    if(e.target.tagName==='SELECT') return;
     const roll=A.rolls[sel]; if(!roll) return;
     if(e.target.dataset.rk!=null){
       let v=e.target.value; const k=e.target.dataset.rk;
@@ -701,6 +923,23 @@ function boot(){
       roll.frames[+fr.dataset.fi][e.target.dataset.fk]=e.target.value; setDirty(true);
       clearTimeout(window.__lr); window.__lr=setTimeout(liveRefresh,350);
     }
+  });
+  function applyVal(el, roll, v){
+    if(el.dataset.rk!=null){ const k=el.dataset.rk; if((k==='box'||k==='ei')) v=(v===''?'':(parseInt(v,10)||v)); roll[k]=v; }
+    else if(el.dataset.fk!=null){ const fr=el.closest('[data-fi]'); if(fr) roll.frames[+fr.dataset.fi][el.dataset.fk]=v; }
+  }
+  // delegation: dropdown change + "add new option"
+  dkEdit.addEventListener('change', e=>{
+    const el=e.target; if(el.tagName!=='SELECT') return;
+    const roll=A.rolls[sel]; if(!roll) return;
+    const optKey=el.dataset.opt;
+    if(el.value==='__add__'){
+      const v=((window.prompt('添加新「'+(el.dataset.label||optKey)+'」选项：',''))||'').trim();
+      if(v){ if(!Array.isArray(DOC.options[optKey])) DOC.options[optKey]=[]; if(DOC.options[optKey].indexOf(v)<0) DOC.options[optKey].push(v); applyVal(el,roll,v); setDirty(true); }
+      renderEdit(); liveRefresh(); return;
+    }
+    applyVal(el,roll,el.value); setDirty(true);
+    clearTimeout(window.__lr); window.__lr=setTimeout(liveRefresh,200);
   });
   dkEdit.addEventListener('click', e=>{
     const roll=A.rolls[sel]; if(!roll) return;
@@ -721,15 +960,23 @@ function boot(){
   dkEdit.addEventListener('drop', e=>{ const d=e.target.closest('#dkDrop'); if(!d) return; e.preventDefault(); d.classList.remove('over'); if(e.dataTransfer.files.length) addFiles(e.dataTransfer.files); });
   dkFile.addEventListener('change', ()=>{ if(dkFile.files.length) addFiles(dkFile.files); dkFile.value=''; });
 
+  // editor side switch (黑白 / 彩色)
+  function syncSideBtns(){ $('#dkSide').querySelectorAll('[data-es]').forEach(b=>b.classList.toggle('on', b.dataset.es===side)); }
+  $('#dkSide').addEventListener('click', e=>{
+    const b=e.target.closest('[data-es]'); if(!b) return;
+    if(b.dataset.es===side){ return; }
+    SFX.tick(); setSide(b.dataset.es); sel = A.rolls.length?0:-1;
+    syncSideBtns(); renderEditor(); renderMast(); renderIndex();
+  });
   // open/close panel
-  function openPanel(){ if(sel<0&&A.rolls.length) sel=0; renderEditor(); setDirty(dirty); dkPanel.classList.add('open'); dkPanel.setAttribute('aria-hidden','false'); }
+  function openPanel(){ syncSideBtns(); if(sel<0&&A.rolls.length) sel=0; renderEditor(); setDirty(dirty); dkPanel.classList.add('open'); dkPanel.setAttribute('aria-hidden','false'); }
   function closePanel(){ dkPanel.classList.remove('open'); dkPanel.setAttribute('aria-hidden','true'); }
   $('#dkBtn').addEventListener('click', openPanel);
   $('#dkClose').addEventListener('click', closePanel);
 
-  // export 
+  // export
   $('#dkExport').addEventListener('click', ()=>{
-    const blob=new Blob([JSON.stringify(A,null,2)],{type:'application/json'});
+    const blob=new Blob([JSON.stringify(DOC,null,2)],{type:'application/json'});
     const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='archive.json';
     document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);
     setDirty(false);
@@ -738,7 +985,13 @@ function boot(){
   window.addEventListener('beforeunload', e=>{ if(dirty){ e.preventDefault(); e.returnValue=''; } });
 
   /* ---- first paint ---- */
-  renderMast(); renderIndex();
+  setSide(side); renderMast(); renderLanding();
+  (function route(){
+    const h=(location.hash||'').replace('#','');
+    if(h==='bw'||h==='color'){ enterSide(h); }
+    else if(h==='edit'){ setView('landing'); }
+    else { setView('landing'); }
+  })();
 }
 </script>
 </body>
